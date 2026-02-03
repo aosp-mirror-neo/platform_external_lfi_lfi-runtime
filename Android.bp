@@ -1,0 +1,234 @@
+// Copyright (C) 2026 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+cc_library_static {
+    // This library must be separate since it uses callback.S, which will create
+    // callback.o. liblfi also creates a callback.o from callback.c. If the two
+    // libraries are combined it causes a conflict.
+    name: "liblfi-core-s",
+    include_dirs: [
+        "external/lfi/lfi-runtime/core",
+    ],
+    arch: {
+        arm64: {
+            srcs: [
+                "core/arch/arm64/callback.S",
+                "core/arch/arm64/runtime.S",
+                "core/arch/arm64/trampoline.S",
+            ],
+        },
+        x86_64: {
+            srcs: [
+                "core/arch/x64/callback.S",
+                "core/arch/x64/runtime.S",
+                "core/arch/x64/trampoline.S",
+            ],
+        },
+        riscv64: {
+            srcs: [
+                "core/arch/riscv64/callback.S",
+                "core/arch/riscv64/runtime.S",
+                "core/arch/riscv64/trampoline.S",
+            ],
+        },
+    },
+    visibility: [":__subpackages__"],
+}
+
+cc_defaults {
+    name: "lfi-runtime-defaults",
+    include_dirs: [
+        "external/lfi/lfi-runtime/core/include",
+        "external/lfi/lfi-runtime/linux/include",
+    ],
+    cflags: [
+        "-Werror=implicit",
+        "-Werror=incompatible-pointer-types",
+        "-Werror=int-conversion",
+        "-Wno-gnu-zero-variadic-macro-arguments",
+        "-Wno-unused-parameter",
+        "-fno-delete-null-pointer-checks",
+        "-fno-strict-aliasing",
+        "-fno-strict-overflow",
+        "-fvisibility=hidden",
+    ],
+}
+
+cc_library {
+    name: "liblfi",
+    defaults: ["lfi-runtime-defaults"],
+    srcs: [
+        "core/arch_asm.c",
+        "core/box.c",
+        "core/boxmap.c",
+        "core/core.c",
+        "core/ctx.c",
+        "core/error.c",
+        "core/extalloc.c",
+        "core/log.c",
+        "core/mmap.c",
+        "core/trampoline.c",
+        "linux/buf.c",
+        "linux/cwalk.c",
+        "linux/debugger.c",
+        "linux/elfload.c",
+        "linux/elfsym.c",
+        "linux/fd.c",
+        "linux/host.c",
+        "linux/linux.c",
+        "linux/list.c",
+        "linux/path.c",
+        "linux/perf.c",
+        "linux/proc.c",
+        "linux/sys.c",
+        "linux/sys/sys_arch_prctl.c",
+        "linux/sys/sys_brk.c",
+        "linux/sys/sys_chdir.c",
+        "linux/sys/sys_chmod.c",
+        "linux/sys/sys_clock_gettime.c",
+        "linux/sys/sys_clone.c",
+        "linux/sys/sys_close.c",
+        "linux/sys/sys_dup.c",
+        "linux/sys/sys_dup3.c",
+        "linux/sys/sys_exit.c",
+        "linux/sys/sys_exit_group.c",
+        "linux/sys/sys_faccessat.c",
+        "linux/sys/sys_fchdir.c",
+        "linux/sys/sys_fchmod.c",
+        "linux/sys/sys_fchown.c",
+        "linux/sys/sys_fsync.c",
+        "linux/sys/sys_ftruncate.c",
+        "linux/sys/sys_futex.c",
+        "linux/sys/sys_getcwd.c",
+        "linux/sys/sys_getdents64.c",
+        "linux/sys/sys_getrandom.c",
+        "linux/sys/sys_getrlimit.c",
+        "linux/sys/sys_gettid.c",
+        "linux/sys/sys_ioctl.c",
+        "linux/sys/sys_lfi_pause.c",
+        "linux/sys/sys_lseek.c",
+        "linux/sys/sys_mkdirat.c",
+        "linux/sys/sys_mmap.c",
+        "linux/sys/sys_mprotect.c",
+        "linux/sys/sys_munmap.c",
+        "linux/sys/sys_nanosleep.c",
+        "linux/sys/sys_newfstatat.c",
+        "linux/sys/sys_none.c",
+        "linux/sys/sys_openat.c",
+        "linux/sys/sys_passthrough.c",
+        "linux/sys/sys_prctl.c",
+        "linux/sys/sys_pread64.c",
+        "linux/sys/sys_pwrite64.c",
+        "linux/sys/sys_read.c",
+        "linux/sys/sys_readlinkat.c",
+        "linux/sys/sys_readv.c",
+        "linux/sys/sys_renameat.c",
+        "linux/sys/sys_renameat2.c",
+        "linux/sys/sys_sched_getaffinity.c",
+        "linux/sys/sys_sched_yield.c",
+        "linux/sys/sys_set_tid_address.c",
+        "linux/sys/sys_sysinfo.c",
+        "linux/sys/sys_time.c",
+        "linux/sys/sys_truncate.c",
+        "linux/sys/sys_uname.c",
+        "linux/sys/sys_unlinkat.c",
+        "linux/sys/sys_write.c",
+        "linux/sys/sys_writev.c",
+        "linux/thread.c",
+        "linux/trampoline.c",
+    ],
+    cflags: [
+        "-DCONFIG_ENABLE_DYLD=1",
+        "-DCONFIG_MAX_FUTEXES=512",
+        "-DHAVE_ARC4RANDOM_BUF",
+        "-DHAVE_ELF_H",
+        "-DHAVE_GETAUXVAL",
+        "-DHAVE_GETENTROPY",
+        "-DHAVE_GETRANDOM",
+        "-DHAVE_MEMFD_CREATE",
+        "-DHAVE_R_DEBUG",
+        "-DHAVE_SYSINFO",
+        "-DHAVE_SYS_FUTEX",
+        "-DHAVE_SYS_GETDENTS64",
+        "-DHAVE_SYS_MEMFD_CREATE",
+    ],
+    target: {
+        android_arm64: {
+            srcs: [
+                "core/arch/arm64/callback.c",
+                "core/arch/arm64/regs.c",
+                "linux/arch/arm64/sys.c",
+            ],
+            include_dirs: [
+                "external/lfi/lfi-runtime/core/arch/arm64",
+                "external/lfi/lfi-runtime/linux/arch/arm64",
+            ],
+        },
+        android_x86_64: {
+            srcs: [
+                "core/arch/x64/callback.c",
+                "core/arch/x64/regs.c",
+                "linux/arch/x64/sys.c",
+            ],
+            include_dirs: [
+                "external/lfi/lfi-runtime/core/arch/x64",
+                "external/lfi/lfi-runtime/linux/arch/x64",
+            ],
+        },
+        android_riscv64: {
+            srcs: [
+                "core/arch/riscv64/callback.c",
+                "core/arch/riscv64/regs.c",
+                "linux/arch/riscv64/sys.c",
+            ],
+            include_dirs: [
+                "external/lfi/lfi-runtime/core/arch/riscv64",
+                "external/lfi/lfi-runtime/linux/arch/riscv64",
+            ],
+        },
+    },
+    whole_static_libs: [
+        "lfi-verifier",
+        "liblfi-core-s",
+    ],
+    export_include_dirs: [
+        "linux",
+        "linux/sys",
+    ],
+    include_dirs: [
+        "external/lfi/lfi-runtime/core",
+    ],
+    visibility: [":__subpackages__"],
+}
+
+cc_binary {
+    name: "lfi-run",
+    defaults: ["lfi-runtime-defaults"],
+    srcs: ["tools/lfi-run/main.c"],
+    static_libs: [
+        "liblfi",
+    ],
+}
+
+cc_binary {
+    name: "lfi-ubench",
+    defaults: ["lfi-runtime-defaults"],
+    srcs: [
+        "tools/lfi-ubench/lib.c",
+        "tools/lfi-ubench/main.c",
+    ],
+    static_libs: [
+        "liblfi",
+    ],
+}
