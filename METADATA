@@ -1,0 +1,16 @@
+name: "lfi-runtime"
+description:
+  "The LFI runtime is responsible for loading sandboxes and handling host "
+  "calls."
+third_party {
+  homepage: "https://github.com/lfi-project/lfi-runtime"
+  identifier {
+    type: "Git"
+    value: "https://github.com/lfi-project/lfi-runtime"
+    primary_source: true
+    version: "023fc8d560bfc88e5d9d9fbcfd53b8057ee70fa4"
+  }
+  version: "023fc8d560bfc88e5d9d9fbcfd53b8057ee70fa4"
+  last_upgrade_date { year: 2026 month: 2 day: 2 }
+  license_type: NOTICE
+}

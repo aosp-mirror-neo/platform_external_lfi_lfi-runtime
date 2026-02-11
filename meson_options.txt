@@ -1,0 +1,68 @@
+option('enable_linux',
+  type: 'boolean',
+  value: true,
+  description: 'enable the Linux emulator (requires Linux)')
+
+option('max_futexes',
+  type: 'integer',
+  min: 1,
+  max: 16384,
+  value: 512,
+  description: 'maximum number of futexes per sandbox')
+
+option('enable_dyld',
+  type: 'boolean',
+  value: true,
+  description: 'enable loading of dynamically-linked executables')
+
+option('enable_tlsdesc',
+  type: 'boolean',
+  value: false,
+  description: 'enable use of TLS descriptors (more efficient TLS) on x86-64; requires libc TLSDESC support')
+
+option('enable_tlsexec',
+  type: 'boolean',
+  value: false,
+  description: 'enable exec TLS (more efficient); liblfi will no longer be usable in a dlopened context')
+
+option('enable_analyzer',
+  type: 'boolean',
+  value: false,
+  description: 'pass -fanalyzer to enable the GCC static analyzer')
+
+option('stores_only',
+  type: 'boolean',
+  value: false,
+  description: 'only sandbox stores -- allows sandboxed programs to read (but not write) outside the sandbox')
+
+# Note: disabling segue or using only one segue sandbox can roughly double the
+# speed of trampolines on x86-64. You can benchmark with test_trampoline.c.
+option('enable_segue',
+  type: 'boolean',
+  value: true,
+  description: 'use %gs for the sandbox base (x86-64 only)')
+
+option('segue_single_sandbox',
+  type: 'boolean',
+  value: false,
+  description: 'assume that %gs is never modified by the host, and there is only one sandbox (x86-64 only)')
+
+option('enable_pku',
+  type: 'boolean',
+  value: false,
+  description: 'use memory protection keys')
+
+option('static_lfi_run',
+  type: 'boolean',
+  value: false,
+  description: 'statically link lfi-run')
+
+option('sys_minimal',
+  type: 'boolean',
+  value: false,
+  description: 'enable the minimal runtime, which only supports syscalls for basic functionality and memory allocation')
+
+option('ctxreg',
+  type: 'boolean',
+  value: false,
+  description: 'enable context register (x25 on arm64, r15 on x64) for storing runtime context')
