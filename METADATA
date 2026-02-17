@@ -9,13 +9,13 @@ third_party {
   last_upgrade_date {
     year: 2026
     month: 2
-    day: 12
+    day: 17
   }
   homepage: "https://github.com/lfi-project/lfi-runtime"
   identifier {
     type: "Git"
     value: "https://github.com/lfi-project/lfi-runtime"
-    version: "9b43806d69d2f50dd392d5bdba6aa8ea484d8663"
+    version: "d0878d066b610ecf29b59b83939ae9dd9d3d9d19"
     primary_source: true
   }
 }
