@@ -13,6 +13,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include <sys/auxv.h>
+
+#define HWCAP2_BTI (1 << 17)
 
 // We do not load ELF files that have more than 64 program headers.
 #define PHNUM_MAX 64
@@ -21,11 +24,11 @@
 // We do not allow executable segments above 1GiB.
 #define CODE_MAX (1UL * 1024 * 1024 * 1024)
 
+#if defined(__aarch64__)
 // Check if the ELF has BTI enabled via PT_GNU_PROPERTY.
 static bool
 elf_has_bti(struct Buf elf, Elf64_Ehdr *ehdr, Elf64_Phdr *phdrs)
 {
-#if defined(__aarch64__)
     for (int i = 0; i < ehdr->e_phnum; i++) {
         if (phdrs[i].p_type != PT_GNU_PROPERTY)
             continue;
@@ -73,13 +76,9 @@ elf_has_bti(struct Buf elf, Elf64_Ehdr *ehdr, Elf64_Phdr *phdrs)
             offset += sizeof(nhdr) + name_size + desc_size;
         }
     }
-#else
-    (void) elf;
-    (void) ehdr;
-    (void) phdrs;
-#endif
     return false;
 }
+#endif
 
 static lfiptr
 p2l(struct LFIBox *box, uintptr_t p)
@@ -307,7 +306,12 @@ elf_load_one(struct LFILinuxProc *proc, struct Buf elf, lfiptr base,
         goto err1;
     }
 
-    bool bti = elf_has_bti(elf, ehdr, phdrs);
+#if defined(__aarch64__)
+    bool bti = elf_has_bti(elf, ehdr, phdrs) &&
+        (getauxval(AT_HWCAP2) & HWCAP2_BTI);
+#else
+    bool bti = false;
+#endif
 
     if (ehdr->e_entry >= CODE_MAX) {
         ERROR("elf_load error: e_entry (0x%lx) is larger than CODE_MAX (0x%lx)",
