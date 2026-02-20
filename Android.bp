@@ -154,6 +154,11 @@ cc_library {
             ],
         },
     },
+    arch: {
+        x86_64: {
+            enabled: false,
+        },
+    },
     whole_static_libs: [
         "lfi-verifier",
         "liblfi-core-s",
@@ -183,6 +188,11 @@ cc_binary {
     static_libs: [
         "liblfi",
     ],
+    arch: {
+        x86_64: {
+            enabled: false,
+        },
+    },
 }
 
 cc_binary {
@@ -195,4 +205,9 @@ cc_binary {
     static_libs: [
         "liblfi",
     ],
+    arch: {
+        x86_64: {
+            enabled: false,
+        },
+    },
 }
