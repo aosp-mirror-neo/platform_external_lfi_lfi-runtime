@@ -64,6 +64,9 @@ cc_defaults {
         "-fno-strict-overflow",
         "-fvisibility=hidden",
     ],
+    shared_libs: [
+        "liblog",
+    ],
 }
 
 cc_library {
