@@ -92,6 +92,7 @@ lfi_ctx_end:
 #endif
     // put val in the return register
     movq %rsi, %rax
+    cld
     // restore callee-saved registers saved in lfi_ctx_entry
     popq %rbp
     popq %rbx
@@ -151,6 +152,7 @@ lfi_syscall_entry:
 
     // restore host stack and call handler
     movq REGS_HOST_SP(%rcx), %rsp
+    cld
     pushq %rcx
     movq %rcx, %rdi
     callq lfi_syscall_handler
@@ -236,7 +238,7 @@ lfi_get_tp:
 .p2align 4
 lfi_set_tp:
 #ifdef HAVE_PKU
-    pushq %rax
+    pushq %rdx
     pushq %rcx
     pushq %rax
     pku_all_access

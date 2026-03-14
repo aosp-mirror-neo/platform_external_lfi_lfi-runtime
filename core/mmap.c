@@ -204,7 +204,7 @@ mm_mapat_cb(struct MMAddrSpace *mm, uintptr_t addr, size_t length, int prot,
     length = mmceil(mm, length);
 
     if (!mmvalid(mm, addr, length))
-        return -LINUX_EINVAL;
+        return (uintptr_t) -1;
 
     struct MMNode *new = malloc(sizeof(struct MMNode));
     if (!new)
@@ -367,10 +367,11 @@ mm_unmap_non_original(struct MMAddrSpace *mm, UpdateFn ufn, void *udata)
 {
     struct MMNode *node = mm->nodes;
     while (node) {
+        struct MMNode *next = node->next;
         if (!node->info.original)
             mm_unmap_cb(mm, node->base << mm->p2pagesize,
                 node->len << mm->p2pagesize, ufn, udata);
-        node = node->next;
+        node = next;
     }
 }
 
